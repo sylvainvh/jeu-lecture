@@ -1,3 +1,22 @@
-node_modules
-dist
-data
+# dépendances et fichiers compilés
+node_modules/
+dist/
+
+# données du jeu (mots, images, sons, enfants, avancement) : jamais dans le dépôt
+/data/
+
+# les mêmes données si le dossier du dépôt sert par erreur de dossier /data au conteneur.
+# Le « / » initial limite ces règles à la racine : server/seed/ reste suivi.
+/admin.json
+/children.json
+/words.json
+/settings.json
+/audio/
+/images/
+*.json.tmp
+
+# image Docker exportée, secrets locaux, journaux
+*.tar.gz
+.env
+.env.*
+*.log
