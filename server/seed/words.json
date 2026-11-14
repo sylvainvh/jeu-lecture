@@ -1,0 +1,5 @@
+[
+  { "id": "seed-chataigne", "enabled": true, "syllables": ["châ", "tai", "gne"], "silent": [false, false, false, false, false, false, false, false, false], "image": "seed-chataigne.png" },
+  { "id": "seed-squelette", "enabled": true, "determiner": "un", "syllables": ["sque", "let", "te"], "silent": [false, false, false, false, false, false, false, false, false], "image": "seed-squelette.png" },
+  { "id": "seed-hiver", "enabled": true, "syllables": ["hi", "ver"], "silent": [true, false, false, false, false], "image": "seed-hiver.png" }
+]

@@ -1,0 +1,17 @@
+services:
+  jeu-lecture:
+    build: .
+    image: jeu-lecture:latest
+    container_name: jeu-lecture
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      # Mot de passe de l'administration. S'il est vide, un mot de passe provisoire
+      # est tiré au hasard à chaque démarrage et écrit dans les logs du conteneur.
+      ADMIN_PASSWORD: ""
+      # Code de classe demandé pour inscrire un enfant (utilisé au premier démarrage
+      # seulement ; ensuite il se change dans l'administration). Vide = tiré au hasard.
+      CLASS_CODE: ""
