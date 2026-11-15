@@ -1,6 +1,6 @@
 import { RoundedBox } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 const P = 0.25;
@@ -22,6 +22,7 @@ const SHOW_ROT: Record<number, [number, number, number]> = {
   1: [0, 0, 0], 6: [0, Math.PI, 0], 2: [0, -H, 0], 5: [0, H, 0], 3: [H, 0, 0], 4: [-H, 0, 0],
 };
 const DURATION = 1.9;
+const STILL_DURATION = 0.8;
 
 interface RollState {
   value: number;
@@ -30,7 +31,7 @@ interface RollState {
   done: (n: number) => void;
 }
 
-function Die({ shown, roll, waiting }: { shown: number; roll: React.RefObject<RollState | null>; waiting: boolean }) {
+function Die({ shown, roll, waiting, animated }: { shown: number; roll: React.RefObject<RollState | null>; waiting: boolean; animated: boolean }) {
   const ref = useRef<THREE.Group>(null);
   useFrame(({ clock }, delta) => {
     const g = ref.current;
@@ -38,16 +39,17 @@ function Die({ shown, roll, waiting }: { shown: number; roll: React.RefObject<Ro
     const r = roll.current;
     if (!r) {
       const [x, y, z] = SHOW_ROT[shown];
-      const wobble = waiting ? Math.sin(clock.elapsedTime * 2.4) * 0.12 : 0;
+      const wobble = waiting && animated ? Math.sin(clock.elapsedTime * 2.4) * 0.12 : 0;
       g.rotation.set(x + wobble, y + wobble * 0.7, z);
-      g.position.y = waiting ? Math.abs(Math.sin(clock.elapsedTime * 2.4)) * 0.1 : 0;
+      g.position.y = waiting && animated ? Math.abs(Math.sin(clock.elapsedTime * 2.4)) * 0.1 : 0;
       return;
     }
-    r.t = Math.min(1, r.t + Math.min(delta, 0.1) / DURATION);
-    const rest = (1 - r.t) ** 2;
+    // sans animation : le dé montre tout de suite son résultat, immobile, le temps de le lire
+    r.t = Math.min(1, r.t + Math.min(delta, 0.1) / (animated ? DURATION : STILL_DURATION));
+    const rest = animated ? (1 - r.t) ** 2 : 0;
     const [x, y, z] = SHOW_ROT[r.value];
     g.rotation.set(x + rest * r.spin[0], y + rest * r.spin[1], z + rest * r.spin[2]);
-    g.position.y = Math.abs(Math.sin(r.t * Math.PI * 3)) * (1 - r.t) * 0.7;
+    g.position.y = animated ? Math.abs(Math.sin(r.t * Math.PI * 3)) * (1 - r.t) * 0.7 : 0;
     if (r.t >= 1) {
       roll.current = null;
       r.done(r.value);
@@ -74,20 +76,33 @@ function Die({ shown, roll, waiting }: { shown: number; roll: React.RefObject<Ro
   );
 }
 
-/** Dé virtuel 3D : un clic le lance, `onResult` reçoit la valeur une fois le dé arrêté. */
-export function Dice({ lastRoll, enabled, onResult }: { lastRoll: number | null; enabled: boolean; onResult: (n: number) => void }) {
+interface DiceProps {
+  lastRoll: number | null;
+  enabled: boolean;
+  onResult: (n: number) => void;
+  /** Compteur : chaque changement lance le dé (raccourci clavier). */
+  rollSignal?: number;
+  animated?: boolean;
+}
+
+/** Dé virtuel 3D : un clic (ou `rollSignal`) le lance, `onResult` reçoit la valeur une fois le dé arrêté. */
+export function Dice({ lastRoll, enabled, onResult, rollSignal = 0, animated = true }: DiceProps) {
   const roll = useRef<RollState | null>(null);
   const start = () => {
     if (!enabled || roll.current) return;
     const turns = () => (2 + Math.floor(Math.random() * 3)) * Math.PI * 2 * (Math.random() < 0.5 ? -1 : 1);
     roll.current = { value: 1 + Math.floor(Math.random() * 6), t: 0, spin: [turns(), turns(), turns() / 2], done: onResult };
   };
+  useEffect(() => {
+    if (rollSignal) start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rollSignal]);
   return (
     <button className={`dice3d ${enabled ? 'ready' : ''}`} onClick={start} disabled={!enabled} aria-label="Lancer le dé">
       <Canvas camera={{ position: [0, 0, 4.2], fov: 32 }} dpr={[1, 2]}>
         <ambientLight intensity={1.5} />
         <directionalLight position={[3, 5, 4]} intensity={2} />
-        <Die shown={lastRoll ?? 1} roll={roll} waiting={enabled} />
+        <Die shown={lastRoll ?? 1} roll={roll} waiting={enabled} animated={animated} />
       </Canvas>
     </button>
   );

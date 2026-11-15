@@ -9,8 +9,27 @@ syllabes colorées, lettres muettes soulignées), se retourne pour montrer l'ima
 - lecture à voix haute du mot entier (🔊) et **syllabe par syllabe** (🐢, « la … mai … son »), quand le découpage de la prononciation est sûr
 - **profils d'enfants** : chaque enfant a un prénom et un avancement mot par mot. Après chaque mot,
   le parent clique 👍 ou 👎 ; au bout de 10 réussites (réglable) le mot est acquis et sort environ quatre fois moins souvent
+- **fiche de l'enfant** pour ses parents (« Les enfants » → « Voir les mots ») : tous les mots, leur avancement et les dernières réponses datées
+- **clavier** : le jeu se joue sans souris (Entrée lance le dé ; bouton « ⌨ Touches » ou touche `?` pour la liste)
+- **concentration** : au lancement d'une partie, on peut couper le plateau mobile, les animations, le décor, les serpents et échelles, les mots sur les cases
 - **administration** (mot de passe) : mots, images (pictogrammes ARASAAC ou image personnelle), sons
   (voix de synthèse ou enregistrement), enfants et mots acquis, couleurs, code de classe
+
+## Touches du clavier
+
+| Touche | Action |
+|---|---|
+| Entrée (ou Espace) | lancer le dé à l'écran |
+| 1 à 6 | indiquer le chiffre du vrai dé |
+| Espace | écouter le mot |
+| S | écouter syllabe par syllabe |
+| I | voir l'image / revenir au mot |
+| ↑ / ↓ | 👍 réussi / 👎 pas réussi (enfant inscrit) |
+| Entrée | continuer (invité), rejouer (fin de partie) |
+| ? ou H | aide |
+| Échap | fermer l'aide, quitter la partie |
+
+Sur la carte d'un enfant inscrit, Entrée ne valide rien : le pouce reste le geste de l'adulte.
 
 ## Comptes et confidentialité
 
@@ -21,6 +40,7 @@ syllabes colorées, lettres muettes soulignées), se retourne pour montrer l'ima
   (« Voir le code ») ou dans l'administration.
 - Les joueurs « invités » n'ont pas de profil : leurs réussites ne sont pas retenues.
 - L'administrateur voit le prénom, les mots et l'avancement de chaque enfant ; le formulaire d'inscription le signale.
+- Chaque réponse (pouce levé ou baissé) est enregistrée avec sa date ; le jeu garde les 30 dernières par mot.
 
 ## Installation sur Unraid
 

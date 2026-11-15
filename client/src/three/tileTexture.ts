@@ -11,7 +11,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 }
 
 /** Dessus d'une case : numéro + mot coloré en écriture script. */
-export function makeTileTexture(index: number, size: number, word: Word | null, colors: Colors): THREE.CanvasTexture {
+export function makeTileTexture(index: number, size: number, word: Word | null, colors: Colors, showWord = true): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
@@ -36,7 +36,7 @@ export function makeTileTexture(index: number, size: number, word: Word | null, 
     ctx.strokeStyle = 'rgba(60,40,90,0.55)';
     ctx.strokeText(special, W / 2, 236);
     ctx.fillText(special, W / 2, 236);
-  } else if (word) {
+  } else if (word && showWord) {
     // étiquette blanche, comme une carte-mot
     ctx.fillStyle = '#ffffff';
     roundRect(ctx, 22, 150, W - 44, 190, 28);

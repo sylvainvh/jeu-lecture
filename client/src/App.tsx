@@ -4,6 +4,7 @@ import { Home } from './pages/Home';
 import { Setup } from './pages/Setup';
 import { Game } from './pages/Game';
 import { Admin } from './pages/Admin';
+import { ChildSheet } from './pages/ChildSheet';
 import { Profiles } from './pages/Profiles';
 
 export const go = (route: string) => {
@@ -37,6 +38,7 @@ export function App() {
   if (route.startsWith('#/partie')) return <Game />;
   if (route.startsWith('#/jouer')) return <Setup />;
   if (route.startsWith('#/admin')) return <Admin />;
+  if (route.startsWith('#/enfants/')) return <ChildSheet id={route.slice('#/enfants/'.length)} />;
   if (route.startsWith('#/enfants')) return <Profiles />;
   // première visite : aucun enfant dans ce navigateur
   return children.length ? <Home /> : <Profiles welcome />;

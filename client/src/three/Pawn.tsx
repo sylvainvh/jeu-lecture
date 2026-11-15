@@ -14,6 +14,8 @@ const HOP_SECONDS = 0.65;
 const SLIDE_SECONDS = 2.4;
 /** Petite pause à l'arrivée, avant que la carte-mot ne s'ouvre. */
 const LANDING_PAUSE = 0.5;
+/** Pause quand les animations sont coupées : le temps de voir où le pion est arrivé. */
+const STILL_PAUSE = 0.9;
 
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
@@ -63,6 +65,7 @@ export function Pawn({ index }: { index: number }) {
   const size = useGame((s) => s.board!);
   const anim = useGame((s) => s.anim);
   const active = useGame((s) => s.current === index && s.phase === 'roll');
+  const animated = useGame((s) => s.focus.animations);
 
   const group = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
@@ -75,20 +78,26 @@ export function Pawn({ index }: { index: number }) {
     if (anim && anim.player === index) {
       if (run.current?.anim.id === anim.id) return;
       if (!placed.current) g.position.copy(slotOf(anim.kind === 'hop' ? anim.path[0] - 1 : player.pos, size, index, count));
-      run.current = { anim, queue: anim.path.map((t) => slotOf(t, size, index, count)), from: g.position.clone(), t: 0, pause: 0 };
+      const queue = anim.path.map((t) => slotOf(t, size, index, count));
+      if (animated) run.current = { anim, queue, from: g.position.clone(), t: 0, pause: 0 };
+      else {
+        // sans animation : le pion est posé directement sur sa case, puis une courte pause
+        g.position.copy(queue[queue.length - 1]);
+        run.current = { anim, queue: [], from: g.position.clone(), t: 0, pause: STILL_PAUSE };
+      }
     } else {
       run.current = null;
       g.position.copy(slotOf(player.pos, size, index, count));
       if (body.current) body.current.rotation.set(0, 0, 0);
     }
     placed.current = true;
-  }, [anim, player.pos, size, index, count]);
+  }, [anim, player.pos, size, index, count, animated]);
 
   useFrame(({ clock }, delta) => {
     const g = group.current;
     const r = run.current;
-    if (marker.current) marker.current.position.y = 1.55 + Math.abs(Math.sin(clock.elapsedTime * 3.2)) * 0.25;
-    if (body.current && !r) body.current.position.y = active ? Math.abs(Math.sin(clock.elapsedTime * 3.2)) * 0.08 : 0;
+    if (marker.current) marker.current.position.y = 1.55 + (animated ? Math.abs(Math.sin(clock.elapsedTime * 3.2)) * 0.25 : 0.1);
+    if (body.current && !r) body.current.position.y = active && animated ? Math.abs(Math.sin(clock.elapsedTime * 3.2)) * 0.08 : 0;
     if (!g || !r) return;
     if (!r.queue.length) {
       // arrivé : on attend un instant, puis on prévient le jeu (une seule fois)

@@ -21,10 +21,26 @@ export interface Anim {
   kind: 'hop' | 'ladder' | 'snake';
 }
 
+/** Réglages de concentration : tout est actif par défaut, chacun peut être coupé au lancement. */
+export interface Focus {
+  /** Le plateau peut être tourné et zoomé. */
+  movableBoard: boolean;
+  /** Déplacements animés, dé qui roule, effets de la carte, confettis. */
+  animations: boolean;
+  /** Arbres, nuages, mer. */
+  scenery: boolean;
+  /** Serpents et échelles sur le plateau. */
+  links: boolean;
+  /** Mots écrits sur les cases (sinon seulement sur la carte). */
+  tileWords: boolean;
+}
+export const DEFAULT_FOCUS: Focus = { movableBoard: true, animations: true, scenery: true, links: true, tileWords: true };
+
 export interface Config {
   players: { name: string; color: string; childId?: string }[];
   size: number;
   diceMode: DiceMode;
+  focus: Focus;
 }
 
 interface Game {
@@ -33,6 +49,7 @@ interface Game {
   current: number;
   phase: Phase;
   diceMode: DiceMode;
+  focus: Focus;
   lastRoll: number | null;
   anim: Anim | null;
   start: (cfg: Config, words: Word[], weights?: Record<string, number>) => void;
@@ -65,16 +82,18 @@ export const useGame = create<Game>()(
         current: 0,
         phase: 'roll',
         diceMode: 'virtual',
+        focus: DEFAULT_FOCUS,
         lastRoll: null,
         anim: null,
 
         start: (cfg, words, weights) =>
           set({
-            board: generateBoard(words, cfg.size, columnsFor(cfg.size, innerHeight > innerWidth), weights),
+            board: generateBoard(words, cfg.size, columnsFor(cfg.size, innerHeight > innerWidth), weights, cfg.focus.links),
             players: cfg.players.map((p) => ({ ...p, pos: 0 })),
             current: 0,
             phase: 'roll',
             diceMode: cfg.diceMode,
+            focus: cfg.focus,
             lastRoll: null,
             anim: null,
           }),
@@ -116,8 +135,8 @@ export const useGame = create<Game>()(
       };
     },
     {
-      name: 'jeu-partie-v3',
-      partialize: ({ board, players, current, phase, diceMode, lastRoll }) => ({ board, players, current, phase, diceMode, lastRoll }),
+      name: 'jeu-partie-v4',
+      partialize: ({ board, players, current, phase, diceMode, focus, lastRoll }) => ({ board, players, current, phase, diceMode, focus, lastRoll }),
       // après un rechargement de page, on reprend sans rejouer l'animation interrompue
       onRehydrateStorage: () => (state) => {
         if (!state?.board) return;

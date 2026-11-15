@@ -9,10 +9,10 @@ const PASTELS = ['#ffd166', '#ff9eb5', '#8fd3ff', '#b5e48c', '#cdb4f6', '#ffb97a
 const SNAKE_COLORS = ['#8e44d6', '#e0569b', '#1fa3a3', '#e07b1f'];
 const UP = new THREE.Vector3(0, 1, 0);
 
-function Tile({ index, board, colors }: { index: number; board: BoardData; colors: Colors }) {
+function Tile({ index, board, colors, showWord }: { index: number; board: BoardData; colors: Colors; showWord: boolean }) {
   const [x, top, z] = tilePosition(index, board);
   const word = board.tiles[index];
-  const texture = useMemo(() => makeTileTexture(index, board.size, word, colors), [index, board.size, word, colors]);
+  const texture = useMemo(() => makeTileTexture(index, board.size, word, colors, showWord), [index, board.size, word, colors, showWord]);
   useEffect(() => () => texture.dispose(), [texture]);
   const special = index === 0 || index === board.size - 1;
   const color = index === 0 ? '#43c59e' : index === board.size - 1 ? '#f4b400' : PASTELS[index % PASTELS.length];
@@ -142,7 +142,7 @@ function Snake({ link, layout, color }: { link: Link; layout: Layout; color: str
   );
 }
 
-export function Board({ board, colors }: { board: BoardData; colors: Colors }) {
+export function Board({ board, colors, showWords = true }: { board: BoardData; colors: Colors; showWords?: boolean }) {
   const [fonts, setFonts] = useState(false);
   useEffect(() => {
     loadTileFonts().then(() => setFonts(true));
@@ -152,7 +152,7 @@ export function Board({ board, colors }: { board: BoardData; colors: Colors }) {
     <group>
       {/* la clé force le redessin des étiquettes quand les polices sont prêtes */}
       {board.tiles.map((_, i) => (
-        <Tile key={`${i}-${fonts}`} index={i} board={board} colors={colors} />
+        <Tile key={`${i}-${fonts}`} index={i} board={board} colors={colors} showWord={showWords} />
       ))}
       {board.links.map((l) =>
         l.type === 'ladder' ? (

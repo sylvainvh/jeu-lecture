@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { existsSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { addAttempt } from '../shared/progress';
 import { fullText, type AdminConfig, type Child, type Info, type Picto, type Settings, type Word } from '../shared/types';
 import {
   AUDIO_DIR, DATA_DIR, IMAGES_DIR, collectGarbage, initStorage, readAdminConfig, readChildren, readSettings, readWords,
@@ -135,9 +136,7 @@ app.post('/api/progress', async (req, reply) => {
   if (!child) return reply.code(403).send({ error: "Cet enfant n'est pas enregistré sur cet appareil" });
   const wordId = body?.wordId ?? '';
   if (!readWords().some((w) => w.id === wordId)) return reply.code(404).send({ error: 'Mot introuvable' });
-  const p = (child.progress[wordId] ??= { success: 0, fail: 0 });
-  if (body?.success) p.success++;
-  else p.fail++;
+  const p = addAttempt((child.progress[wordId] ??= { success: 0, fail: 0 }), !!body?.success);
   writeChildren(all);
   return p;
 });
@@ -171,7 +170,8 @@ app.put('/api/admin/children/:id/progress/:wordId', async (req, reply) => {
   if (!child) return reply.code(404).send({ error: 'Enfant introuvable' });
   if (!Number.isInteger(success) || success < 0 || success > 9999) return reply.code(400).send({ error: 'Compteur invalide' });
   if (!readWords().some((w) => w.id === wordId)) return reply.code(404).send({ error: 'Mot introuvable' });
-  child.progress[wordId] = { success, fail: child.progress[wordId]?.fail ?? 0 };
+  // correction du compteur seulement : l'historique des réponses est conservé
+  child.progress[wordId] = { ...child.progress[wordId], success, fail: child.progress[wordId]?.fail ?? 0 };
   writeChildren(all);
   return child;
 });

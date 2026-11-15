@@ -47,9 +47,17 @@ export interface Info {
   tts: boolean;
 }
 
+export interface Attempt {
+  /** Date ISO de la réponse. */
+  t: string;
+  ok: boolean;
+}
+
 export interface WordProgress {
   success: number;
   fail: number;
+  /** Les dernières réponses, de la plus ancienne à la plus récente (absent sur les données d'avant l'historique). */
+  history?: Attempt[];
 }
 
 /** Un enfant : un prénom, un code secret, et son avancement mot par mot. */

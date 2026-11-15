@@ -80,6 +80,7 @@ export function generateBoard(
   size: number,
   cols: number,
   weights: Record<string, number> = {},
+  links = true,
   rng: () => number = Math.random,
 ): Board {
   const pool = words.filter((w) => w.enabled);
@@ -100,5 +101,5 @@ export function generateBoard(
     previous = bag.pop()!;
     tiles[i] = previous;
   }
-  return { size, cols, tiles, links: generateLinks({ size, cols }, rng) };
+  return { size, cols, tiles, links: links ? generateLinks({ size, cols }, rng) : [] };
 }

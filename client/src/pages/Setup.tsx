@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { go } from '../App';
 import { wordWeights } from '../../../shared/progress';
 import { useData } from '../data';
-import { useGame, type DiceMode } from '../game/store';
+import { DEFAULT_FOCUS, useGame, type DiceMode, type Focus } from '../game/store';
 
 export const GOOSE_COLORS = ['#f6a609', '#2f8fe6', '#e0569b', '#17a589'];
 const KEY = 'jeu-config-v2';
@@ -14,7 +14,16 @@ interface Saved {
   guests: string[];
   diceMode: DiceMode;
   size?: number;
+  focus?: Partial<Focus>;
 }
+
+const FOCUS_OPTIONS: [keyof Focus, string, string][] = [
+  ['movableBoard', 'Plateau mobile', 'On peut tourner et zoomer le plateau'],
+  ['animations', 'Animations', 'Pions qui sautent, dé qui roule, effets, confettis'],
+  ['scenery', 'Décor', 'Arbres, nuages et mer autour du plateau'],
+  ['links', 'Serpents et échelles', 'Raccourcis et retours en arrière'],
+  ['tileWords', 'Mots sur les cases', 'Sinon, le mot n\'apparaît que sur la carte'],
+];
 
 function loadSaved(): Saved {
   try {
@@ -30,6 +39,7 @@ export function Setup() {
   const [cfg, setCfg] = useState(loadSaved);
   const size = cfg.size ?? settings.boardSize;
   const active = words.filter((w) => w.enabled).length;
+  const focus: Focus = { ...DEFAULT_FOCUS, ...cfg.focus };
 
   const selected = children.filter((c) => (cfg.selected ? cfg.selected.includes(c.id) : true)).slice(0, MAX_PLAYERS);
   const guests = cfg.guests.slice(0, MAX_PLAYERS - selected.length);
@@ -53,7 +63,7 @@ export function Setup() {
       ...selected.map((c) => ({ name: c.name, childId: c.id })),
       ...guests.map((g, i) => ({ name: g.trim() || `Invité ${i + 1}` })),
     ].map((p, i) => ({ ...p, color: GOOSE_COLORS[i] }));
-    start({ players, size, diceMode: cfg.diceMode }, words, wordWeights(words, selected, settings.acquiredAfter));
+    start({ players, size, diceMode: cfg.diceMode, focus }, words, wordWeights(words, selected, settings.acquiredAfter));
     go('/partie');
   };
 
@@ -107,6 +117,26 @@ export function Setup() {
           {[20, 30, 40].map((n) => (
             <button key={n} className={`choice wide ${size === n ? 'on' : ''}`} onClick={() => setCfg({ ...cfg, size: n })}>
               {n} cases
+            </button>
+          ))}
+        </div>
+
+        <h3>Concentration</h3>
+        <p className="hint">Désactive ce qui distrait l'enfant.</p>
+        <div className="focus-list">
+          {FOCUS_OPTIONS.map(([key, label, detail]) => (
+            <button
+              key={key}
+              className="focus-row"
+              role="switch"
+              aria-checked={focus[key]}
+              onClick={() => setCfg({ ...cfg, focus: { ...focus, [key]: !focus[key] } })}
+            >
+              <span className={`switch ${focus[key] ? 'on' : ''}`}><i /></span>
+              <span>
+                <b>{label}</b>
+                <small>{detail}</small>
+              </span>
             </button>
           ))}
         </div>

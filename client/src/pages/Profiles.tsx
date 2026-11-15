@@ -72,6 +72,7 @@ export function Profiles({ welcome = false }: { welcome?: boolean }) {
                   </span>
                 </div>
                 <div className="row wrap">
+                  <button className="btn small" onClick={() => go(`/enfants/${c.id}`)}>📈 Voir les mots</button>
                   <button className="btn small ghost" onClick={() => setShown(shown === c.id ? null : c.id)}>
                     {shown === c.id ? 'Masquer le code' : '🔑 Voir le code'}
                   </button>

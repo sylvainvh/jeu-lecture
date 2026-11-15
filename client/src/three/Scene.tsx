@@ -3,6 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
 import type { Colors } from '../../../shared/types';
 import { TILE_D, TILE_W, rowsOf, type Board as BoardData, type Layout } from '../game/board';
+import type { Focus } from '../game/store';
 import { Board } from './Board';
 import { Pawn } from './Pawn';
 import { Scenery } from './Scenery';
@@ -35,11 +36,12 @@ function CameraRig({ layout }: { layout: Layout }) {
   return null;
 }
 
-export function Scene({ board, colors, players }: { board: BoardData; colors: Colors; players: number }) {
+export function Scene({ board, colors, players, focus }: { board: BoardData; colors: Colors; players: number; focus: Focus }) {
+  const sky = focus.scenery ? '#aee3ff' : '#f3f6fa';
   return (
     <Canvas shadows camera={{ fov: FOV, near: 0.5, far: 300 }} dpr={[1, 2]}>
-      <color attach="background" args={['#aee3ff']} />
-      <fog attach="fog" args={['#aee3ff', 60, 160]} />
+      <color attach="background" args={[sky]} />
+      <fog attach="fog" args={[sky, 60, 160]} />
       <ambientLight intensity={1.6} />
       <directionalLight
         position={[9, 18, 10]}
@@ -55,6 +57,7 @@ export function Scene({ board, colors, players }: { board: BoardData; colors: Co
       <CameraRig layout={board} />
       <OrbitControls
         makeDefault
+        enabled={focus.movableBoard}
         enablePan={false}
         minPolarAngle={0.15}
         maxPolarAngle={1.3}
@@ -63,8 +66,8 @@ export function Scene({ board, colors, players }: { board: BoardData; colors: Co
         minAzimuthAngle={-1.1}
         maxAzimuthAngle={1.1}
       />
-      <Scenery layout={board} />
-      <Board board={board} colors={colors} />
+      <Scenery layout={board} plain={!focus.scenery} />
+      <Board board={board} colors={colors} showWords={focus.tileWords} />
       {Array.from({ length: players }, (_, i) => (
         <Pawn key={i} index={i} />
       ))}

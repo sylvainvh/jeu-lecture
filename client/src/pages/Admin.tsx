@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { go } from '../App';
-import { acquiredCount, successCount } from '../../../shared/progress';
+import { acquiredCount } from '../../../shared/progress';
 import { DEFAULT_SETTINGS, type Child, type Settings, type Word } from '../../../shared/types';
 import { api, imageUrl } from '../api';
 import { useData } from '../data';
 import { speak } from '../speech';
+import { ChildProgress } from '../ui/ChildProgress';
 import { WordEditor } from '../ui/WordEditor';
 import { WordText } from '../ui/WordText';
 
@@ -161,30 +162,17 @@ function ChildrenTab() {
               </div>
             </div>
             {open === c.id && (
-              <table className="progress">
-                <thead>
-                  <tr><th>Mot</th><th>Réussites</th><th>Échecs</th><th /></tr>
-                </thead>
-                <tbody>
-                  {words.map((w) => {
-                    const ok = successCount(c, w.id);
-                    return (
-                      <tr key={w.id} className={ok >= target ? 'acquired' : ''}>
-                        <td><WordText word={w} colors={settings.colors} font="script" /></td>
-                        <td>{ok >= target ? `★ ${ok}` : `${ok} / ${target}`}</td>
-                        <td>{c.progress[w.id]?.fail ?? 0}</td>
-                        <td>
-                          <div className="row end-tight">
-                            {ok < target && <button className="btn small ghost" onClick={() => setCount(c, w, target)}>Marquer acquis</button>}
-                            {ok > 0 && <button className="btn small ghost" onClick={() => setCount(c, w, 0)}>Remettre à zéro</button>}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {words.length === 0 && <tr><td colSpan={4} className="hint">Aucun mot dans le jeu.</td></tr>}
-                </tbody>
-              </table>
+              <ChildProgress
+                child={c}
+                words={words}
+                settings={settings}
+                actions={(w, ok) => (
+                  <>
+                    {ok < target && <button className="btn small ghost" onClick={() => setCount(c, w, target)}>Marquer acquis</button>}
+                    {ok > 0 && <button className="btn small ghost" onClick={() => setCount(c, w, 0)}>Remettre à zéro</button>}
+                  </>
+                )}
+              />
             )}
           </li>
         ))}

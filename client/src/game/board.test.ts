@@ -51,6 +51,10 @@ describe('generateBoard', () => {
     expect(b.tiles.slice(1, -1).every(Boolean)).toBe(true);
   });
 
+  it('sans serpents ni échelles', () => {
+    expect(generateBoard([word('a')], 30, 6, {}, false).links).toEqual([]);
+  });
+
   it('fonctionne sans aucun mot', () => {
     expect(generateBoard([], 20, 5).tiles.every((t) => t === null)).toBe(true);
   });

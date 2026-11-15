@@ -52,7 +52,8 @@ function Cloud({ position, scale, speed }: { position: [number, number, number];
   );
 }
 
-export function Scenery({ layout }: { layout: Layout }) {
+/** `plain` : mode concentration, un simple socle neutre sans arbres, nuages ni mer. */
+export function Scenery({ layout, plain = false }: { layout: Layout; plain?: boolean }) {
   const { size, cols } = layout;
   const rows = rowsOf(layout);
   const w = cols * TILE_W + 5;
@@ -73,6 +74,14 @@ export function Scenery({ layout }: { layout: Layout }) {
     }
     return out;
   }, [size, cols, rows]);
+
+  if (plain)
+    return (
+      <mesh position={[0, -0.5, 0]} receiveShadow>
+        <boxGeometry args={[w - 2.5, 1, d - 2.5]} />
+        <meshStandardMaterial color="#dfe6ee" roughness={1} />
+      </mesh>
+    );
 
   return (
     <group>

@@ -224,3 +224,59 @@ input:focus { border-color: #9d8be0; }
 .field.inline input[type='number'] { width: 90px; flex: none; }
 .code-input { width: 220px !important; flex: none; }
 .end-tight { justify-content: flex-end; gap: 6px; }
+
+/* ---------- raccourcis clavier ---------- */
+.key, .shortcuts kbd { font-family: 'Fredoka Variable', sans-serif; font-size: 0.72rem; font-weight: 600; line-height: 1; padding: 3px 7px; border-radius: 7px; background: #fff; color: var(--ink); border: 1.5px solid #cfc8e3; box-shadow: 0 2px 0 #cfc8e3; white-space: nowrap; }
+.key, .keyboard-only { display: none; }
+.keyed { position: relative; }
+.keyed > .key { position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); z-index: 1; }
+/* rappels des touches : sur un appareil à souris, ou dès qu'une touche du clavier a servi */
+@media (hover: hover) and (pointer: fine) {
+  .key { display: inline-block; }
+  .keyboard-only { display: inline-flex; }
+  .card-actions { row-gap: 22px; }
+}
+.has-keyboard .key { display: inline-block; }
+.has-keyboard .keyboard-only { display: inline-flex; }
+.has-keyboard .card-actions { row-gap: 22px; }
+.shortcuts { width: min(100%, 560px); }
+.shortcuts table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.shortcuts td { padding: 7px 4px; border-top: 1px solid var(--line); }
+.shortcuts td:first-child { white-space: nowrap; width: 1%; padding-right: 16px; }
+.shortcuts kbd { font-size: 0.9rem; padding: 5px 10px; display: inline-block; }
+
+/* ---------- concentration ---------- */
+.focus-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.focus-row { display: flex; align-items: center; gap: 12px; border: 2px solid var(--line); background: #fff; border-radius: 16px; padding: 8px 12px; text-align: left; }
+.focus-row b { display: block; font-weight: 600; }
+.focus-row small { color: var(--muted); font-size: 0.85rem; }
+span.switch { display: inline-block; }
+.game.no-anim *, .game.no-anim *::before, .game.no-anim *::after { animation: none !important; transition: none !important; }
+
+/* ---------- fiche de l'enfant ---------- */
+.sheet { margin-top: 14px; }
+.sheet-summary { display: flex; flex-direction: column; gap: 8px; }
+.bar { height: 10px; border-radius: 999px; background: #ece8f6; overflow: hidden; flex: 1; min-width: 80px; max-width: 260px; }
+.bar.big { height: 16px; max-width: none; flex: none; width: 100%; }
+.bar i { display: block; height: 100%; background: var(--green); border-radius: 999px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 10px; }
+.filters button { border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 0.92rem; }
+.filters button.on { border-color: var(--green); background: #e6f8ee; color: var(--green-d); }
+.filters button span { color: var(--muted); font-weight: 500; margin-left: 4px; }
+.sheet-words { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.sheet-words li { display: flex; align-items: center; gap: 14px; border: 2px solid var(--line); border-radius: 18px; padding: 8px 12px; flex-wrap: wrap; }
+.sheet-words li.empty { justify-content: center; color: var(--muted); padding: 24px; }
+.sheet-words li.acquired { background: #f4fbf6; }
+.sheet-word { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 4px; }
+.sheet-word .wt-script { font-size: 1.5rem; }
+.sheet-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 18px; }
+.sheet-line .count { font-weight: 600; font-size: 0.92rem; }
+.sheet-words li.acquired .count { color: var(--green-d); }
+.dots { display: inline-flex; gap: 4px; }
+.dots i, .dot-legend { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.dots i.ok, .dot-legend.ok { background: var(--green); }
+.dots i.ko, .dot-legend.ko { background: #fff; border: 2.5px solid #e5484d; }
+.sheet-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.legend { margin-top: 12px; }
+.dot-legend { vertical-align: -1px; margin: 0 2px 0 6px; }
+.hud-bottom .keyed { margin-bottom: 10px; }
